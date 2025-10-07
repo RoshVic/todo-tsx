@@ -1,19 +1,17 @@
-import TaskList from "./components/TaskList";
-
-import { FaPen, FaClipboardList } from "react-icons/fa";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Tasks from "./pages/Tasks";
 
 function App() {
     return (
-        <div className="App">
-            <div className="header">
-                <div className="logoside">
-                    <FaPen />
-                    <h1>Task List</h1>
-                    <FaClipboardList />
-                </div>
-            </div>
-            <TaskList />
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/tasks" element={<Tasks />} />
+            </Routes>
+        </Router>
     );
 }
 
