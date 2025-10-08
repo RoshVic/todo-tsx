@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login } from "../api/auth";
+import { Link } from "react-router-dom";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -13,11 +14,11 @@ export default function Login() {
         setLoading(true);
         try {
             const data = await login(email, password);
-            localStorage.setItem("token", data.token);
-            alert("Успешный вход!");
-            // можно перенаправить на /tasks
+            localStorage.setItem("token", data.authentication.sessionToken);
+            alert("Login is successful!");
+            window.location.href = "/tasks";
         } catch (err) {
-            setError("Неверный email или пароль");
+            setError("Wrong email or password");
         } finally {
             setLoading(false);
         }
@@ -25,6 +26,9 @@ export default function Login() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+            <nav>
+                <Link to="/register">Register</Link>
+            </nav>
             <form
                 onSubmit={handleLogin}
                 className="bg-white shadow-md rounded-xl p-8 w-80"
@@ -44,7 +48,7 @@ export default function Login() {
                 />
                 <input
                     type="password"
-                    placeholder="Пароль"
+                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="border rounded-lg p-2 w-full mb-5"
@@ -56,7 +60,7 @@ export default function Login() {
                     disabled={loading}
                     className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600"
                 >
-                    {loading ? "Вход..." : "Войти"}
+                    {loading ? "Entering..." : "Enter"}
                 </button>
             </form>
         </div>

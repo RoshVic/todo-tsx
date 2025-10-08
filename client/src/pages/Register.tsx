@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { register } from "../api/auth";
+import { Link } from "react-router-dom";
 
 export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -12,10 +14,10 @@ export default function Register() {
         setMessage("");
         setLoading(true);
         try {
-            await register(email, password);
-            setMessage("Регистрация успешна! Теперь войдите.");
+            await register(email, password, username);
+            setMessage("Registration is successful! Now login.");
         } catch {
-            setMessage("Ошибка регистрации");
+            setMessage("Registration error.");
         } finally {
             setLoading(false);
         }
@@ -23,12 +25,15 @@ export default function Register() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+            <nav>
+                <Link to="/">Login</Link>
+            </nav>
             <form
                 onSubmit={handleRegister}
                 className="bg-white shadow-md rounded-xl p-8 w-80"
             >
                 <h2 className="text-2xl font-bold mb-6 text-center">
-                    Регистрация
+                    Registration
                 </h2>
                 {message && <p className="text-center mb-4">{message}</p>}
 
@@ -42,9 +47,17 @@ export default function Register() {
                 />
                 <input
                     type="password"
-                    placeholder="Пароль"
+                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    className="border rounded-lg p-2 w-full mb-5"
+                    required
+                />
+                <input
+                    type="username"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     className="border rounded-lg p-2 w-full mb-5"
                     required
                 />
@@ -54,7 +67,7 @@ export default function Register() {
                     disabled={loading}
                     className="bg-green-500 text-white py-2 px-4 rounded-lg w-full hover:bg-green-600"
                 >
-                    {loading ? "Создание..." : "Создать аккаунт"}
+                    {loading ? "Creating..." : "Create an account"}
                 </button>
             </form>
         </div>

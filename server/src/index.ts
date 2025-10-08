@@ -22,7 +22,8 @@ server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-const MONGO_URL = "";
+const MONGO_URL =
+    "mongodb+srv://kavakami:kavakami@todo-tsx.rbqkyvi.mongodb.net/";
 
 mongoose.connect(MONGO_URL);
 mongoose.connection.on("error", (error) => {

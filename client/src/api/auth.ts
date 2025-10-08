@@ -1,11 +1,15 @@
-const API_URL = "http://localhost:8080/";
+const API_URL = "http://localhost:8080";
 
-export async function register(email: string, password: string) {
+export async function register(
+    email: string,
+    password: string,
+    username: string
+) {
     try {
-        const res = await fetch(`${API_URL}/register`, {
+        const res = await fetch(`${API_URL}/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ email, password, username }),
         });
         return res.json();
     } catch (error) {
@@ -15,7 +19,7 @@ export async function register(email: string, password: string) {
 
 export async function login(email: string, password: string) {
     try {
-        const res = await fetch(`${API_URL}/login`, {
+        const res = await fetch(`${API_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
