@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import TaskList from "../components/TaskList";
 import { useAuth } from "../hooks/useAuth";
+import { API_URL } from "../api/auth";
 
 interface Task {
     id: number;
@@ -11,21 +12,19 @@ export default function Tasks() {
     const [tasks, setTasks] = useState<Task[]>([]);
 
     useEffect(() => {
-        fetch("http://localhost:8080/tasks", {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+        fetch(`${API_URL}/tasks/${localStorage.getItem("token")}`, {
+            method: "GET",
         })
             .then((res) => {
                 if (res.status === 401) throw new Error("Unauthorized");
                 return res.json();
             })
-            .then((data) => setTasks(data.tasks))
-            .catch(() => {
-                alert("Session has expired, login again!");
-                localStorage.removeItem("token");
-                window.location.href = "/";
-            });
+            .then((data) => setTasks(data.tasks));
+        // .catch(() => {
+        //     alert("Session has expired, login again!");
+        //     localStorage.removeItem("token");
+        //     window.location.href = "/";
+        // });
     }, []);
 
     return (
@@ -34,7 +33,9 @@ export default function Tasks() {
                 type="button"
                 onClick={() => useAuth().logout()}
                 className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600"
-            ></button>
+            >
+                Logout
+            </button>
             <TaskList />
             <h1 className="text-2xl font-bold mb-4">My tasks</h1>
             <ul>

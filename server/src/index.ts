@@ -28,6 +28,7 @@ const MONGO_URL =
 mongoose.connect(MONGO_URL);
 mongoose.connection.on("error", (error) => {
     console.log(
+        error,
         "MongoDB connection error. Please make sure MongoDB is running."
     );
 });

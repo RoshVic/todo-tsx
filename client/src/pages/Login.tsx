@@ -16,7 +16,7 @@ export default function Login() {
             const data = await login(email, password);
             localStorage.setItem("token", data.authentication.sessionToken);
             alert("Login is successful!");
-            window.location.href = "/tasks";
+            window.location.href = `/tasks/${data.authentication.sessionToken}`;
         } catch (err) {
             setError("Wrong email or password");
         } finally {

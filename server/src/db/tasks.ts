@@ -6,12 +6,14 @@ interface Task {
 }
 
 interface TaskList {
-    taskList: Array<Task>;
+    title: string;
     description: string;
+    tasks: Array<Task>;
 }
 
 const taskSchema = new mongoose.Schema({
     title: { type: String, required: true, default: "Folder" },
+    folderId: { type: Number, required: true },
     description: { type: String, required: true, default: "Description" },
     taskList: { type: Array<TaskList>, required: true, default: [] },
     userId: {
@@ -22,3 +24,11 @@ const taskSchema = new mongoose.Schema({
 });
 
 export const TaskModel = mongoose.model("Task", taskSchema);
+
+export const getTaskFoldersByUserId = (userId: string) => {
+    return TaskModel.find({ userId });
+};
+export const createNewTaskFolder = async (values: Record<string, any>) => {
+    const task = await new TaskModel(values).save();
+    return task.toObject();
+};
