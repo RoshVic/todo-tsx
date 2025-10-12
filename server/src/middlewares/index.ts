@@ -31,9 +31,9 @@ export const isAuthenticated = async (
     next: express.NextFunction
 ) => {
     try {
-        const sessionToken = req.cookies["td-tsx-auth"];
+        const sessionToken = req.headers.authorization.split(" ")[1];
         if (!sessionToken) {
-            return res.sendStatus(403);
+            return res.sendStatus(401);
         }
 
         const existingUser = await getUserBySessionToken(sessionToken);

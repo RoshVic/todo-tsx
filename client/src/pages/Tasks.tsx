@@ -12,19 +12,20 @@ export default function Tasks() {
     const [tasks, setTasks] = useState<Task[]>([]);
 
     useEffect(() => {
-        fetch(`${API_URL}/tasks/${localStorage.getItem("token")}`, {
-            method: "GET",
+        fetch(`${API_URL}/tasks`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
         })
             .then((res) => {
                 if (res.status === 401) throw new Error("Unauthorized");
                 return res.json();
             })
-            .then((data) => setTasks(data.tasks));
-        // .catch(() => {
-        //     alert("Session has expired, login again!");
-        //     localStorage.removeItem("token");
-        //     window.location.href = "/";
-        // });
+            .catch(() => {
+                alert("Session has expired, login again!");
+                localStorage.removeItem("token");
+                window.location.href = "/";
+            });
     }, []);
 
     return (
@@ -38,13 +39,13 @@ export default function Tasks() {
             </button>
             <TaskList />
             <h1 className="text-2xl font-bold mb-4">My tasks</h1>
-            <ul>
+            {/* <ul>
                 {tasks.map((t) => (
                     <li key={t.id} className="mb-2 border-b pb-1">
                         {t.title}
                     </li>
                 ))}
-            </ul>
+            </ul> */}
         </div>
     );
 }

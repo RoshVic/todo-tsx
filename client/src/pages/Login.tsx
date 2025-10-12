@@ -16,7 +16,6 @@ export default function Login() {
             const data = await login(email, password);
             localStorage.setItem("token", data.authentication.sessionToken);
             alert("Login is successful!");
-            window.location.href = `/tasks/${data.authentication.sessionToken}`;
         } catch (err) {
             setError("Wrong email or password");
         } finally {
@@ -28,6 +27,7 @@ export default function Login() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <nav>
                 <Link to="/register">Register</Link>
+                <Link to="/tasks">Tasks</Link>
             </nav>
             <form
                 onSubmit={handleLogin}

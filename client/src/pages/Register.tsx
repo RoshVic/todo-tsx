@@ -27,6 +27,7 @@ export default function Register() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <nav>
                 <Link to="/">Login</Link>
+                <Link to="/tasks">Tasks</Link>
             </nav>
             <form
                 onSubmit={handleRegister}

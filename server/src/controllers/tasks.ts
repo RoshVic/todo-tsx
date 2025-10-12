@@ -1,5 +1,10 @@
-import { createNewTaskFolder, getTaskFoldersByUserId } from "../db/tasks";
-import { getUserBySessionToken } from "../db/users";
+import { get } from "lodash";
+import {
+    createNewTaskFolder,
+    deleteTaskFolderById,
+    getTaskFoldersByUserId,
+    updateTaskFolderById,
+} from "../db/tasks";
 import express from "express";
 
 export const getAllTaskFolders = async (
@@ -7,14 +12,7 @@ export const getAllTaskFolders = async (
     res: express.Response
 ) => {
     try {
-        const { sessionToken } = req.params;
-
-        const user = await getUserBySessionToken(sessionToken);
-        if (!user) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
-        const userId = user._id.toString();
+        const userId = get(req, "identity._id") as string;
         const taskFolders = await getTaskFoldersByUserId(userId);
         return res.status(200).json(taskFolders).end();
     } catch (error) {
@@ -28,17 +26,10 @@ export const createTaskFolder = async (
     res: express.Response
 ) => {
     try {
-        const { sessionToken } = req.params;
+        const userId = get(req, "identity._id") as string;
 
-        const user = await getUserBySessionToken(sessionToken);
-        if (!user) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
-        const userId = user._id.toString();
-
-        const { title, folderId, description, taskList } = req.body;
-        if (!title || !folderId || !description || !taskList) {
+        const { title, description, taskList } = req.body;
+        if (!title || !description || !taskList) {
             return res
                 .status(400)
                 .json({ message: "Missing required fields" })
@@ -47,13 +38,55 @@ export const createTaskFolder = async (
 
         const newTaskFolder = await createNewTaskFolder({
             title,
-            folderId,
             description,
             taskList,
             userId: userId,
         });
 
         return res.status(201).json(newTaskFolder).end();
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
+export const deleteTaskFolder = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { id } = req.params;
+        const deletedTaskFolder = await deleteTaskFolderById(id);
+
+        return res.json(deletedTaskFolder);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
+export const updateTaskFolder = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        const { id } = req.params;
+
+        const { title, description, taskList } = req.body;
+        if (!title || !description || !taskList) {
+            return res
+                .status(400)
+                .json({ message: "Missing required fields" })
+                .end();
+        }
+
+        const updatedTaskFolder = await updateTaskFolderById(id, {
+            title,
+            description,
+            taskList,
+        });
+
+        return res.json(updatedTaskFolder);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);
