@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { register } from "../api/auth";
 import { Link } from "react-router-dom";
+import "../css/style.css";
 
 export default function Register() {
     const [email, setEmail] = useState("");
@@ -16,6 +17,7 @@ export default function Register() {
         try {
             await register(email, password, username);
             setMessage("Registration is successful! Now login.");
+            window.location.href = "/";
         } catch {
             setMessage("Registration error.");
         } finally {
@@ -27,7 +29,6 @@ export default function Register() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <nav>
                 <Link to="/">Login</Link>
-                <Link to="/tasks">Tasks</Link>
             </nav>
             <form
                 onSubmit={handleRegister}

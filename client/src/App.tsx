@@ -3,13 +3,19 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Tasks from "./pages/Tasks";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "./hooks/useAuth";
 
 function App() {
     return (
         <>
             <Router>
                 <Routes>
-                    <Route path="/" element={<Login />} />
+                    <Route
+                        path="/"
+                        element={
+                            useAuth().isAuthenticated ? <Tasks /> : <Login />
+                        }
+                    />
                     <Route path="/register" element={<Register />} />
                     <Route
                         path="/tasks"

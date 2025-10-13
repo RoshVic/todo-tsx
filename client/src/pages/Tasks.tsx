@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import TaskList from "../components/TaskList";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../api/auth";
+import "../css/style.css";
 
 interface Task {
     id: number;
@@ -32,7 +33,10 @@ export default function Tasks() {
         <div className="p-6">
             <button
                 type="button"
-                onClick={() => useAuth().logout()}
+                onClick={() => {
+                    localStorage.removeItem("token");
+                    window.location.href = "/";
+                }}
                 className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600"
             >
                 Logout

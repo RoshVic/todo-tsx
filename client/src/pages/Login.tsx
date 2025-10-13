@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { login } from "../api/auth";
 import { Link } from "react-router-dom";
+import "../css/style.css";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -16,6 +17,7 @@ export default function Login() {
             const data = await login(email, password);
             localStorage.setItem("token", data.authentication.sessionToken);
             alert("Login is successful!");
+            window.location.href = "/";
         } catch (err) {
             setError("Wrong email or password");
         } finally {
@@ -27,13 +29,12 @@ export default function Login() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <nav>
                 <Link to="/register">Register</Link>
-                <Link to="/tasks">Tasks</Link>
             </nav>
             <form
                 onSubmit={handleLogin}
                 className="bg-white shadow-md rounded-xl p-8 w-80"
             >
-                <h2 className="text-2xl font-bold mb-6 text-center">Вход</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
                 {error && (
                     <p className="text-red-500 mb-4 text-center">{error}</p>
                 )}

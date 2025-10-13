@@ -1,10 +1,10 @@
 import { useState } from "react";
-import type TaskTypes from "../task";
-import TaskService from "../TaskService";
+import type TaskTypes from "../interfaces/task";
+import TaskForm from "./TaskForm";
+import TaskService from "../services/TaskService";
 import { FaEdit, FaCheck } from "react-icons/fa";
 import { GiCancel } from "react-icons/gi";
 import { RiDeleteBin5Fill } from "react-icons/ri";
-import TaskForm from "./TaskForm";
 
 export default function TaskList() {
     const [tasks, setTasks] = useState<TaskTypes[]>(TaskService.getTasks());

@@ -1,4 +1,4 @@
-import type TaskTypes from "./task";
+import type TaskTypes from "../interfaces/task";
 
 const LOCAL_STORAGE_KEY = "tasks";
 

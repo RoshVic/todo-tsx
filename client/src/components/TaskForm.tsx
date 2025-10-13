@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import TaskService from "../TaskService";
-import type TaskTypes from "../task";
+import TaskService from "../services/TaskService";
+import type TaskTypes from "../interfaces/task";
 
 interface PropTypes {
     setTasks: Dispatch<SetStateAction<TaskTypes[]>>;
