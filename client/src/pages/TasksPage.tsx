@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import TaskList from "../components/TaskList";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../api/auth";
+import { useNavigate } from "react-router-dom";
 import "../css/style.css";
 
 interface Task {
@@ -9,8 +10,10 @@ interface Task {
     title: string;
 }
 
-export default function Tasks() {
+export default function TasksPage() {
     const [tasks, setTasks] = useState<Task[]>([]);
+    const { logout } = useAuth();
+    let navigate = useNavigate();
 
     useEffect(() => {
         fetch(`${API_URL}/tasks`, {
@@ -22,10 +25,11 @@ export default function Tasks() {
                 if (res.status === 401) throw new Error("Unauthorized");
                 return res.json();
             })
-            .catch(() => {
+            .catch((e) => {
+                console.log(e);
                 alert("Session has expired, login again!");
                 localStorage.removeItem("token");
-                window.location.href = "/";
+                navigate("/");
             });
     }, []);
 
@@ -33,15 +37,12 @@ export default function Tasks() {
         <div className="p-6">
             <button
                 type="button"
-                onClick={() => {
-                    localStorage.removeItem("token");
-                    window.location.href = "/";
-                }}
+                onClick={() => logout()}
                 className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600"
             >
                 Logout
             </button>
-            <TaskList />
+
             <h1 className="text-2xl font-bold mb-4">My tasks</h1>
             {/* <ul>
                 {tasks.map((t) => (
@@ -50,6 +51,7 @@ export default function Tasks() {
                     </li>
                 ))}
             </ul> */}
+            <TaskList />
         </div>
     );
 }

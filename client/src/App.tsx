@@ -1,33 +1,25 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Tasks from "./pages/Tasks";
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import TasksPage from "./pages/TasksPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { useAuth } from "./hooks/useAuth";
 
 function App() {
     return (
-        <>
-            <Router>
-                <Routes>
-                    <Route
-                        path="/"
-                        element={
-                            useAuth().isAuthenticated ? <Tasks /> : <Login />
-                        }
-                    />
-                    <Route path="/register" element={<Register />} />
-                    <Route
-                        path="/tasks"
-                        element={
-                            <ProtectedRoute>
-                                <Tasks />
-                            </ProtectedRoute>
-                        }
-                    />
-                </Routes>
-            </Router>
-        </>
+        <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route
+                path="/tasks"
+                element={
+                    <ProtectedRoute>
+                        <TasksPage />
+                    </ProtectedRoute>
+                }
+            />
+        </Routes>
     );
 }
 

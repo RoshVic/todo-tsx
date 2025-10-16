@@ -58,7 +58,7 @@ export const deleteTaskFolder = async (
         const { id } = req.params;
         const deletedTaskFolder = await deleteTaskFolderById(id);
 
-        return res.json(deletedTaskFolder);
+        return res.status(200).json(deletedTaskFolder);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);
@@ -86,7 +86,7 @@ export const updateTaskFolder = async (
             taskList,
         });
 
-        return res.json(updatedTaskFolder);
+        return res.status(200).json(updatedTaskFolder);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);

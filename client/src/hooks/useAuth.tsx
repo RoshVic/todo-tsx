@@ -1,22 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext, useContext, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+interface ProviderProps {
+    isAuthenticated: boolean;
+    logining(token: string): void;
+    logout(): void;
+}
+const AuthContext = createContext<ProviderProps>({
+    isAuthenticated: false,
+    logining: () => {},
+    logout: () => {},
+});
 
-export function useAuth() {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    let navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         setIsAuthenticated(!!token);
     }, []);
 
-    const login = (token: string) => {
+    const logining = (token: string) => {
         localStorage.setItem("token", token);
         setIsAuthenticated(true);
+        navigate("/tasks");
     };
 
     const logout = () => {
         localStorage.removeItem("token");
         setIsAuthenticated(false);
+        navigate("/");
     };
 
-    return { isAuthenticated, login, logout };
+    const value = useMemo(
+        () => ({ isAuthenticated, logining, logout }),
+        [isAuthenticated]
+    );
+
+    return (
+        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+    );
+}
+
+export function useAuth() {
+    return useContext(AuthContext)!;
 }

@@ -11,11 +11,11 @@ export const isOwner = (
         const { id } = req.params;
         const currendUserId = get(req, "identity._id") as string;
         if (!currendUserId) {
-            return res.sendStatus(403);
+            return res.sendStatus(400);
         }
 
         if (currendUserId.toString() != id) {
-            return res.sendStatus(403);
+            return res.sendStatus(401);
         }
 
         next();
@@ -43,7 +43,7 @@ export const isAuthenticated = async (
 
         const existingUser = await getUserBySessionToken(sessionToken);
         if (!existingUser) {
-            return res.sendStatus(403);
+            return res.sendStatus(401);
         }
 
         merge(req, { identity: existingUser });

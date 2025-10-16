@@ -13,12 +13,12 @@ export const login = async (req: express.Request, res: express.Response) => {
             "+authentication.salt +authentication.password"
         );
         if (!user) {
-            return res.sendStatus(400);
+            return res.sendStatus(401);
         }
 
         const expectedHash = authentication(user.authentication.salt, password);
         if (user.authentication.password !== expectedHash) {
-            return res.sendStatus(403);
+            return res.sendStatus(401);
         }
 
         const salt = random();
@@ -29,7 +29,14 @@ export const login = async (req: express.Request, res: express.Response) => {
 
         await user.save();
 
-        return res.status(200).json(user).end();
+        const safeUser = {
+            _id: user._id,
+            email: user.email,
+            username: user.username,
+            token: user.authentication.sessionToken,
+        };
+
+        return res.status(200).json(safeUser);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);
@@ -58,7 +65,13 @@ export const register = async (req: express.Request, res: express.Response) => {
             },
         });
 
-        return res.status(200).json(user).end();
+        const safeUser = {
+            _id: user._id,
+            email: user.email,
+            username: user.username,
+        };
+
+        return res.status(201).json(safeUser).end();
     } catch (error) {
         console.log(error);
         return res.sendStatus(400);
