@@ -28,8 +28,8 @@ export const createTaskFolder = async (
     try {
         const userId = get(req, "identity._id") as string;
 
-        const { title, description, taskList } = req.body;
-        if (!title || !description || !taskList) {
+        const { title, description, taskLists } = req.body;
+        if (!title || !description || !taskLists) {
             return res
                 .status(400)
                 .json({ message: "Missing required fields" })
@@ -39,7 +39,7 @@ export const createTaskFolder = async (
         const newTaskFolder = await createNewTaskFolder({
             title,
             description,
-            taskList,
+            taskLists,
             userId: userId,
         });
 
@@ -72,8 +72,8 @@ export const updateTaskFolder = async (
     try {
         const { id } = req.params;
 
-        const { title, description, taskList } = req.body;
-        if (!title || !description || !taskList) {
+        const { title, description, taskLists } = req.body;
+        if (!title || !description || !taskLists) {
             return res
                 .status(400)
                 .json({ message: "Missing required fields" })
@@ -83,7 +83,7 @@ export const updateTaskFolder = async (
         const updatedTaskFolder = await updateTaskFolderById(id, {
             title,
             description,
-            taskList,
+            taskLists,
         });
 
         return res.status(200).json(updatedTaskFolder);

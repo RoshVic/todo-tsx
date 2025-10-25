@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 interface Task {
-    task: string;
+    description: string;
     completed: boolean;
 }
 
@@ -12,13 +12,14 @@ interface TaskList {
 }
 
 const taskSchema = new mongoose.Schema({
-    title: { type: String, required: true, default: "Folder" },
-    description: { type: String, required: true, default: "Description" },
-    taskList: { type: Array<TaskList>, required: true, default: [] },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    taskLists: { type: Array<TaskList>, required: true },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
+        select: false,
     },
 });
 

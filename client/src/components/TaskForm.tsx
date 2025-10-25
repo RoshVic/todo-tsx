@@ -1,24 +1,26 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import TaskService from "../services/TaskService";
-import type TaskTypes from "../interfaces/task";
+import type { TaskType } from "../interfaces/tasks";
 
 interface PropTypes {
-    setTasks: Dispatch<SetStateAction<TaskTypes[]>>;
+    tasks: TaskType[];
+    setTasks: Dispatch<SetStateAction<TaskType[]>>;
 }
 
-const TaskForm: React.FC<PropTypes> = ({ setTasks }) => {
+export default function TaskForm({ tasks, setTasks }: PropTypes) {
     const [newTaskText, setNewTaskText] = useState<string>("");
 
     const handleAddTask = () => {
         if (newTaskText.trim() !== "") {
-            const newTask = TaskService.addTask(newTaskText);
+            const newTask = TaskService.addTask(tasks, newTaskText);
             setTasks((prevTasks) => [...prevTasks, newTask]);
             setNewTaskText("");
         }
     };
+
     return (
-        <div className="inputForm">
+        <div className="space-x-2">
             <input
                 type="text"
                 value={newTaskText}
@@ -29,6 +31,4 @@ const TaskForm: React.FC<PropTypes> = ({ setTasks }) => {
             <button onClick={handleAddTask}>Add Task</button>
         </div>
     );
-};
-
-export default TaskForm;
+}

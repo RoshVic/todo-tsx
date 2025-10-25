@@ -1,36 +1,27 @@
-import type TaskTypes from "../interfaces/task";
+import type { TaskType } from "../interfaces/tasks";
 
-const LOCAL_STORAGE_KEY = "tasks";
+// const LOCAL_STORAGE_KEY = "tasks";
 
 const TaskService = {
-    getTasks: (): TaskTypes[] => {
-        const tasksStr = localStorage.getItem(LOCAL_STORAGE_KEY);
-        return tasksStr ? JSON.parse(tasksStr) : [];
-    },
-
-    addTask: (text: string): TaskTypes => {
-        const tasks = TaskService.getTasks();
-        const newTask: TaskTypes = {
-            id: tasks.length + 1,
-            text,
+    addTask: (tasks: TaskType[], description: string): TaskType => {
+        const newTask: TaskType = {
+            description,
             completed: false,
         };
         const updatedTasks = [...tasks, newTask];
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTasks));
+        // localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTasks));
         return newTask;
     },
 
-    updateTask: (task: TaskTypes): TaskTypes => {
-        const tasks = TaskService.getTasks();
-        const updatedTasks = tasks.map((t) => (t.id === task.id ? task : t));
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTasks));
+    updateTask: (tasks: TaskType[], task: TaskType, id: number): TaskType => {
+        const updatedTasks = tasks.map((t, index) => (index === id ? task : t));
+        // localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTasks));
         return task;
     },
 
-    deleteTask: (id: number): void => {
-        const tasks = TaskService.getTasks();
-        const updatedTasks = tasks.filter((task) => task.id !== id);
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTasks));
+    deleteTask: (tasks: TaskType[], id: number): void => {
+        const updatedTasks = tasks.filter((_task, index) => index !== id);
+        // localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTasks));
     },
 };
 
