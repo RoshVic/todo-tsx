@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { API_URL } from "../api/auth";
 import { useAuth } from "../hooks/useAuth";
 import type { TaskFolderType } from "../interfaces/tasks";
@@ -7,12 +6,8 @@ import TaskList from "../components/TaskList";
 import "../css/style.css";
 
 export default function TasksPage() {
-    const [taskFolders, setTaskFolders] = useState<TaskFolderType[]>(
-        localStorage.getItem("taskFolders")
-            ? JSON.parse(localStorage.getItem("taskFolders") || "")
-            : []
-    );
-    const [taskFolder, setTaskFolder] = useState<TaskFolderType>(
+    const [taskFolders, setTaskFolders] = useState<TaskFolderType[]>([]);
+    const [currFolder, setCurrFolder] = useState<TaskFolderType>(
         taskFolders[0] || {
             _id: "",
             title: "",
@@ -20,8 +15,9 @@ export default function TasksPage() {
             taskLists: [],
         }
     );
-    let { logout, isAuthenticated } = useAuth();
-    let navigate = useNavigate();
+    const [activeButtonId, setActiveButtonId] = useState<string>("");
+
+    let { logout } = useAuth();
 
     useEffect(() => {
         fetch(`${API_URL}/tasks`, {
@@ -35,16 +31,28 @@ export default function TasksPage() {
             })
             .then((res) => {
                 setTaskFolders(res);
-                localStorage.setItem("taskFolders", JSON.stringify(res));
             })
             .catch((e) => {
                 console.log(e);
                 alert("Session has expired, login again!");
-                localStorage.removeItem("token");
-                isAuthenticated = false;
-                navigate("/");
+                logout();
             });
     }, []);
+
+    const handleFolderButtonClick = (folder: TaskFolderType, id: string) => {
+        const prevElem = document.getElementById(activeButtonId);
+        if (prevElem) {
+            prevElem.style.backgroundColor = "#364153";
+        }
+
+        const currElem = document.getElementById(id);
+        if (currElem) {
+            currElem.style.backgroundColor = "#66123bff";
+        }
+
+        setActiveButtonId(id);
+        setCurrFolder(folder);
+    };
 
     return (
         <div className="min-h-screen bg-gray-700 divide-y-1 divide-gray-200">
@@ -65,10 +73,14 @@ export default function TasksPage() {
                 <div className="col-span-1 shadow-md grid col-auto rounded-lg divide-y-1 divide-gray-200">
                     {taskFolders.map((taskFolder, index) => (
                         <button
-                            key={index}
+                            id={"TaskFolderButton" + index}
+                            key={"TaskFolderButtonKey" + index}
                             type="button"
                             onClick={() => {
-                                setTaskFolder(taskFolder);
+                                handleFolderButtonClick(
+                                    taskFolder,
+                                    "TaskFolderButton" + index
+                                );
                             }}
                             className="text-white text-left py-2 px-4 hover:bg-gray-600"
                         >
@@ -78,9 +90,9 @@ export default function TasksPage() {
                 </div>
                 <div className="col-span-3 gap-4 grid grid-cols-3">
                     {taskFolders.length != 0 ? (
-                        taskFolder.taskLists.map((taskList, index) => (
+                        currFolder.taskLists.map((taskList, index) => (
                             <div
-                                key={index}
+                                key={"TaskListKey" + index}
                                 className="p-4 shadow-md bg-gray-800"
                             >
                                 <TaskList {...taskList} />

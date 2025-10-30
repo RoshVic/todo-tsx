@@ -13,7 +13,14 @@ const AuthContext = createContext<ProviderProps>({
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
     let navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        setIsAuthenticated(!!token);
+        setLoading(false);
+    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -37,6 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         [isAuthenticated]
     );
 
+    if (loading) return <div>Loading...</div>;
     return (
         <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
     );

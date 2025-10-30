@@ -29,7 +29,7 @@ export const createUser = async (values: Record<string, any>) => {
     return user.toObject();
 };
 export const deleteUserById = (id: string) => {
-    return UserModel.findByIdAndDelete({ _id: id });
+    return UserModel.findByIdAndDelete(id);
 };
 export const updateUserById = (id: string, values: Record<string, any>) => {
     return UserModel.findByIdAndUpdate(id, values);

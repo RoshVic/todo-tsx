@@ -66,7 +66,7 @@ export default function TaskList(taskList: TaskListType) {
 
             <div className="mt-4 space-y-2">
                 {tasks.map((task, index) => (
-                    <div key={index}>
+                    <div key={"TaskKey" + index}>
                         {editedTaskId === index ? (
                             <div className="flex space-x-2">
                                 <input
