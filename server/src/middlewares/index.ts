@@ -1,35 +1,8 @@
 import express from "express";
 import { get, merge } from "lodash";
-import { getUserBySessionToken } from "../db/users";
+import Users from "../models/userModel";
 
-export const isOwner = (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-) => {
-    try {
-        const { id } = req.params;
-        const currendUserId = get(req, "identity._id") as string;
-        if (!currendUserId) {
-            return res.sendStatus(400);
-        }
-
-        if (currendUserId.toString() != id) {
-            return res.sendStatus(401);
-        }
-
-        next();
-    } catch (error) {
-        console.log(error);
-        return res.sendStatus(400);
-    }
-};
-
-export const isAuthenticated = async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-) => {
+export const isAuthenticated = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         const authHeaders = req.headers.authorization;
         if (!authHeaders) {
@@ -41,7 +14,7 @@ export const isAuthenticated = async (
             return res.sendStatus(401);
         }
 
-        const existingUser = await getUserBySessionToken(sessionToken);
+        const existingUser = await Users.getUserBySessionToken(sessionToken);
         if (!existingUser) {
             return res.sendStatus(401);
         }
@@ -51,6 +24,47 @@ export const isAuthenticated = async (
         return next();
     } catch (error) {
         console.log(error);
+
+        return res.sendStatus(400);
+    }
+};
+
+export const isOwner = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const currentUserId = get(req, "identity._id") as string;
+        if (!currentUserId) {
+            return res.sendStatus(400);
+        }
+
+        const { userId } = req.params;
+        if (currentUserId.toString() != userId) {
+            return res.sendStatus(401);
+        }
+
+        next();
+    } catch (error) {
+        console.log(error);
+
+        return res.sendStatus(400);
+    }
+};
+
+export const isAdmin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const currentUserId = get(req, "identity._id") as string;
+        if (!currentUserId) {
+            return res.sendStatus(400);
+        }
+
+        const currentUser = await Users.getUserById(currentUserId).select("+authentication.isAdmin");
+        if (!currentUser.authentication.isAdmin) {
+            return res.sendStatus(401);
+        }
+
+        next();
+    } catch (error) {
+        console.log(error);
+
         return res.sendStatus(400);
     }
 };

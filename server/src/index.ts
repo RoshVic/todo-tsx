@@ -10,27 +10,21 @@ import router from "./router";
 const app = express();
 
 app.use(cors({ credentials: true }));
-
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
 
 const server = http.createServer(app);
 
-const PORT = process.env.PORT || 8080;
+const PORT = 8080;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-const MONGO_URL =
-    "mongodb+srv://kavakami:kavakami@todo-tsx.rbqkyvi.mongodb.net/";
-
+const MONGO_URL = "mongodb+srv://kavakami:kavakami@todo-tsx.rbqkyvi.mongodb.net/";
 mongoose.connect(MONGO_URL);
 mongoose.connection.on("error", (error) => {
-    console.log(
-        error,
-        "MongoDB connection error. Please make sure MongoDB is running."
-    );
+    console.log(error, "MongoDB connection error. Please make sure MongoDB is running.");
 });
 
 app.use("/", router());
