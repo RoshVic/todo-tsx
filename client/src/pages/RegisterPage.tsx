@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { register } from "../api/auth";
+import { register } from "../api/authAPI";
 import { useNavigate } from "react-router-dom";
 import "../css/style.css";
 
@@ -9,7 +9,7 @@ export default function RegisterPage() {
     const [username, setUsername] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,18 +27,9 @@ export default function RegisterPage() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <form
-                onSubmit={handleRegister}
-                className="bg-white shadow-md rounded-xl p-8 w-80"
-            >
-                <h2 className="text-2xl font-bold mb-6 text-center">
-                    Registration
-                </h2>
-                {message && (
-                    <p className="text-green-500 text-center mb-4 ">
-                        {message}
-                    </p>
-                )}
+            <form onSubmit={handleRegister} className="bg-white shadow-md rounded-xl p-8 w-80">
+                <h2 className="text-2xl font-bold mb-6 text-center">Registration</h2>
+                {message && <p className="text-green-500 text-center mb-4 ">{message}</p>}
 
                 <input
                     type="email"
@@ -65,11 +56,7 @@ export default function RegisterPage() {
                     required
                 />
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="bg-green-500 text-white py-2 px-4 rounded-lg w-full hover:bg-green-600"
-                >
+                <button type="submit" disabled={loading} className="bg-green-500 text-white py-2 px-4 rounded-lg w-full hover:bg-green-600">
                     {loading ? "Creating..." : "Create an account"}
                 </button>
                 <button

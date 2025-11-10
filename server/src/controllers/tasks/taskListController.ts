@@ -1,14 +1,14 @@
 import express from "express";
 import { get } from "lodash";
-import Lists from "../models/taskListModel";
+import Lists from "../../models/tasks/taskListModel";
+import Tasks from "../../models/tasks/taskModel";
 
 const TaskListControl = {
     getAllLists: async (req: express.Request, res: express.Response) => {
         try {
             const { folderId } = req.params;
-            const userId = get(req, "identity._id") as string;
 
-            const allLists = await Lists.getListsByFolderId(folderId, userId).select("title description tasks");
+            const allLists = await Lists.getListsByFolderId(folderId);
 
             return res.status(200).json(allLists);
         } catch (error) {
@@ -58,9 +58,8 @@ const TaskListControl = {
             }
 
             const { listId } = req.params;
-            const userId = get(req, "identity._id") as string;
 
-            const updatedList = await Lists.updateListById(listId, userId, {
+            const updatedList = await Lists.updateListById(listId, {
                 title,
                 description,
             });
@@ -76,9 +75,10 @@ const TaskListControl = {
     deleteList: async (req: express.Request, res: express.Response) => {
         try {
             const { listId } = req.params;
-            const userId = get(req, "identity._id") as string;
 
-            const deletedList = await Lists.deleteListById(listId, userId);
+            const deletedList = await Lists.deleteListById(listId);
+
+            await Tasks.deleteTasksByListId(listId);
 
             return res.status(200).json(deletedList);
         } catch (error) {

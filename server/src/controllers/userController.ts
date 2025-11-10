@@ -1,5 +1,8 @@
 import express from "express";
 import Users from "../models/userModel";
+import Folders from "../models/tasks/taskFolderModel";
+import Lists from "../models/tasks/taskListModel";
+import Tasks from "../models/tasks/taskModel";
 
 const UserControl = {
     getAllUsers: async (req: express.Request, res: express.Response) => {
@@ -44,6 +47,23 @@ const UserControl = {
             const { userId } = req.params;
 
             const deletedUser = await Users.deleteUserById(userId);
+
+            const foldersFromUser = await Folders.getFoldersByUserId(userId);
+
+            foldersFromUser.forEach(async (folder) => {
+                const folderId = folder._id.toString();
+
+                await Folders.deleteFolderById(folderId);
+
+                const listsFromFolder = await Lists.getListsByFolderId(folderId);
+
+                listsFromFolder.forEach(async (list) => {
+                    const listId = list._id.toString();
+
+                    await Lists.deleteListById(listId);
+                    await Tasks.deleteTasksByListId(listId);
+                });
+            });
 
             const safeUser = {
                 email: deletedUser.email,

@@ -1,11 +1,12 @@
 import express from "express";
-import Users from "../controllers/userController";
-import { isAuthenticated, isOwner, isAdmin } from "../middlewares";
+import BasicMiddle from "../middlewares";
+import UserMiddle from "../middlewares/userMiddleware";
+import UserControl from "../controllers/userController";
 
 export default (router: express.Router) => {
-    router.get("/users", isAuthenticated, isAdmin, Users.getAllUsers);
+    router.get("/users", BasicMiddle.isAuthenticated, BasicMiddle.isAdmin, UserControl.getAllUsers);
 
-    router.patch("/users/:userId", isAuthenticated, isOwner, Users.updateUser);
+    router.patch("/users/:userId", BasicMiddle.isAuthenticated, UserMiddle.isOwner, UserControl.updateUser);
 
-    router.delete("/users/:userId", isAuthenticated, isOwner, Users.deleteUser);
+    router.delete("/users/:userId", BasicMiddle.isAuthenticated, UserMiddle.isOwner, UserControl.deleteUser);
 };

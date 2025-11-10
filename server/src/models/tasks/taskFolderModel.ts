@@ -34,25 +34,28 @@ const TaskFolderDB = {
         return folders;
     },
 
+    getFolderById: (id: string) => {
+        const folder = TaskFolderModel.findById(id);
+
+        return folder;
+    },
+
     createNewFolder: async (values: Record<string, any>) => {
         const newFolder = await new TaskFolderModel(values).save();
 
         return newFolder.toObject();
     },
 
-    updateFolderById: (_id: string, userId: string, values: Record<string, any>) => {
-        const updatedFolder = TaskFolderModel.findOneAndUpdate({ _id, userId }, values, {
+    updateFolderById: (id: string, values: Record<string, any>) => {
+        const updatedFolder = TaskFolderModel.findByIdAndUpdate(id, values, {
             new: true,
         });
 
         return updatedFolder;
     },
 
-    deleteFolderById: (_id: string, userId: string) => {
-        const deletedFolder = TaskFolderModel.findOneAndDelete({
-            _id,
-            userId,
-        });
+    deleteFolderById: (id: string) => {
+        const deletedFolder = TaskFolderModel.findByIdAndDelete(id);
 
         return deletedFolder;
     },

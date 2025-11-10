@@ -1,14 +1,13 @@
 import express from "express";
 import { get } from "lodash";
-import Tasks from "../models/taskModel";
+import Tasks from "../../models/tasks/taskModel";
 
 const TaskControl = {
     getAllTasks: async (req: express.Request, res: express.Response) => {
         try {
             const { listId } = req.params;
-            const userId = get(req, "identity._id") as string;
 
-            const allTasks = await Tasks.getTasksByListId(listId, userId).select("title description completed");
+            const allTasks = await Tasks.getTasksByListId(listId);
 
             return res.status(200).json(allTasks);
         } catch (error) {
@@ -59,9 +58,8 @@ const TaskControl = {
             }
 
             const { taskId } = req.params;
-            const userId = get(req, "identity._id") as string;
 
-            const updatedTask = await Tasks.updateTaskById(taskId, userId, {
+            const updatedTask = await Tasks.updateTaskById(taskId, {
                 title: title,
                 description: description,
             });
@@ -77,9 +75,8 @@ const TaskControl = {
     deleteTask: async (req: express.Request, res: express.Response) => {
         try {
             const { taskId } = req.params;
-            const userId = get(req, "identity._id") as string;
 
-            const deletedTask = await Tasks.deleteTaskById(taskId, userId);
+            const deletedTask = await Tasks.deleteTaskById(taskId);
 
             return res.status(200).json(deletedTask);
         } catch (error) {

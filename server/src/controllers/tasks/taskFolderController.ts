@@ -1,13 +1,15 @@
 import express from "express";
 import { get } from "lodash";
-import Folders from "../models/taskFolderModel";
+import Folders from "../../models/tasks/taskFolderModel";
+import Lists from "../../models/tasks/taskListModel";
+import Tasks from "../../models/tasks/taskModel";
 
 const TaskFolderControl = {
     getAllFolders: async (req: express.Request, res: express.Response) => {
         try {
             const userId = get(req, "identity._id") as string;
 
-            const allFolders = await Folders.getFoldersByUserId(userId).select("title description taskLists");
+            const allFolders = await Folders.getFoldersByUserId(userId);
 
             return res.status(200).json(allFolders);
         } catch (error) {
@@ -29,7 +31,7 @@ const TaskFolderControl = {
             const newFolder = await Folders.createNewFolder({
                 title,
                 description,
-                userId: userId,
+                userId,
             });
 
             const safeFolder = {
@@ -54,9 +56,8 @@ const TaskFolderControl = {
             }
 
             const { folderId } = req.params;
-            const userId = get(req, "identity._id") as string;
 
-            const updatedFolder = await Folders.updateFolderById(folderId, userId, {
+            const updatedFolder = await Folders.updateFolderById(folderId, {
                 title,
                 description,
             });
@@ -72,9 +73,17 @@ const TaskFolderControl = {
     deleteFolder: async (req: express.Request, res: express.Response) => {
         try {
             const { folderId } = req.params;
-            const userId = get(req, "identity._id") as string;
 
-            const deletedFolder = await Folders.deleteFolderById(folderId, userId);
+            const deletedFolder = await Folders.deleteFolderById(folderId);
+
+            const listsFromFolder = await Lists.getListsByFolderId(folderId);
+
+            listsFromFolder.forEach(async (list) => {
+                const listId = list._id.toString();
+
+                await Lists.deleteListById(listId);
+                await Tasks.deleteTasksByListId(listId);
+            });
 
             return res.status(200).json(deletedFolder);
         } catch (error) {

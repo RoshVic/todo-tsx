@@ -30,13 +30,18 @@ taskListSchema.set("toJSON", { virtuals: true });
 const TaskListModel = mongoose.model("TaskList", taskListSchema);
 
 const TaskListDB = {
-    getListsByFolderId: (folderId: string, userId: string) => {
+    getListsByFolderId: (folderId: string) => {
         const lists = TaskListModel.find({
             folderId,
-            userId,
         }).populate("tasks");
 
         return lists;
+    },
+
+    getListById: (id: string) => {
+        const list = TaskListModel.findById(id);
+
+        return list;
     },
 
     createNewList: async (values: Record<string, any>) => {
@@ -45,21 +50,24 @@ const TaskListDB = {
         return newList.toObject();
     },
 
-    updateListById: (_id: string, userId: string, values: Record<string, any>) => {
-        const updatedList = TaskListModel.findOneAndUpdate({ _id, userId }, values, {
+    updateListById: (id: string, values: Record<string, any>) => {
+        const updatedList = TaskListModel.findByIdAndUpdate(id, values, {
             new: true,
         });
 
         return updatedList;
     },
 
-    deleteListById: (_id: string, userId: string) => {
-        const deletedList = TaskListModel.findOneAndDelete({
-            _id,
-            userId,
-        });
+    deleteListById: (id: string) => {
+        const deletedList = TaskListModel.findByIdAndDelete(id);
 
         return deletedList;
+    },
+
+    deleteListsByFolderId: (folderId: string) => {
+        const deletedListsCount = TaskListModel.deleteMany({ folderId });
+
+        return deletedListsCount;
     },
 };
 

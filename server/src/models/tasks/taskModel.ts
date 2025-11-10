@@ -23,10 +23,16 @@ const taskSchema = new mongoose.Schema(
 const TaskModel = mongoose.model("Task", taskSchema);
 
 const TaskDB = {
-    getTasksByListId: (listId: string, userId: string) => {
-        const tasks = TaskModel.find({ listId, userId });
+    getTasksByListId: (listId: string) => {
+        const tasks = TaskModel.find({ listId });
 
         return tasks;
+    },
+
+    getTaskById: (id: string) => {
+        const task = TaskModel.findById(id);
+
+        return task;
     },
 
     createNewTask: async (values: Record<string, any>) => {
@@ -35,18 +41,24 @@ const TaskDB = {
         return newTask.toObject();
     },
 
-    updateTaskById: (_id: string, userId: string, values: Record<string, any>) => {
-        const updatedTask = TaskModel.findOneAndUpdate({ _id, userId }, values, {
+    updateTaskById: (id: string, values: Record<string, any>) => {
+        const updatedTask = TaskModel.findByIdAndUpdate(id, values, {
             new: true,
         });
 
         return updatedTask;
     },
 
-    deleteTaskById: (_id: string, userId: string) => {
-        const deletedTask = TaskModel.findOneAndDelete({ _id, userId });
+    deleteTaskById: (id: string) => {
+        const deletedTask = TaskModel.findByIdAndDelete(id);
 
         return deletedTask;
+    },
+
+    deleteTasksByListId: (listId: string) => {
+        const deletedTasksCount = TaskModel.deleteMany({ listId });
+
+        return deletedTasksCount;
     },
 };
 

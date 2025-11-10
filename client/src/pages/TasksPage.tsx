@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../api/auth";
+
+import "../css/style.css";
+import FolderAPI from "../api/taskFolderAPI";
 import { useAuth } from "../hooks/useAuth";
 import type { TaskFolderType } from "../interfaces/tasks";
-import TaskList from "../components/TaskList";
-import "../css/style.css";
+import TaskFolder from "../components/TaskFolder";
 
 export default function TasksPage() {
     const [taskFolders, setTaskFolders] = useState<TaskFolderType[]>([]);
@@ -17,20 +18,17 @@ export default function TasksPage() {
     );
     const [activeButtonId, setActiveButtonId] = useState<string>("");
 
-    let { logout } = useAuth();
+    const { logout } = useAuth();
 
     useEffect(() => {
-        fetch(`${API_URL}/tasks`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-        })
+        FolderAPI.getAllFolders()
             .then((res) => {
+                if (!res) throw new Error("No response from server");
                 if (res.status === 401) throw new Error("Unauthorized");
                 return res.json();
             })
-            .then((res) => {
-                setTaskFolders(res);
+            .then((data) => {
+                setTaskFolders(data);
             })
             .catch((e) => {
                 console.log(e);
@@ -38,6 +36,12 @@ export default function TasksPage() {
                 logout();
             });
     }, []);
+
+    const handleAddFolderButton = async () => {
+        const newFolder = await FolderAPI.createFolder("New Folder", "Folder Description");
+        newFolder.taskLists = [];
+        setTaskFolders([...taskFolders, newFolder]);
+    };
 
     const handleFolderButtonClick = (folder: TaskFolderType, id: string) => {
         const prevElem = document.getElementById(activeButtonId);
@@ -64,23 +68,28 @@ export default function TasksPage() {
                 >
                     Logout
                 </button>
-                <h1 className="text-2xl text-white font-bold justify-center flex w-full">
-                    My tasks
-                </h1>
+                <h1 className="text-2xl text-white font-bold justify-center flex w-full">My tasks</h1>
             </div>
 
             <div className="p-8 gap-8 grid grid-cols-4">
                 <div className="col-span-1 shadow-md grid col-auto rounded-lg divide-y-1 divide-gray-200">
+                    <button
+                        type="button"
+                        onClick={() => {
+                            handleAddFolderButton();
+                        }}
+                        className="text-white text-left py-2 px-4 hover:bg-gray-600"
+                    >
+                        Add Folder
+                    </button>
+
                     {taskFolders.map((taskFolder, index) => (
                         <button
                             id={"TaskFolderButton" + index}
-                            key={"TaskFolderButtonKey" + index}
+                            key={taskFolder._id}
                             type="button"
                             onClick={() => {
-                                handleFolderButtonClick(
-                                    taskFolder,
-                                    "TaskFolderButton" + index
-                                );
+                                handleFolderButtonClick(taskFolder, "TaskFolderButton" + index);
                             }}
                             className="text-white text-left py-2 px-4 hover:bg-gray-600"
                         >
@@ -88,20 +97,8 @@ export default function TasksPage() {
                         </button>
                     ))}
                 </div>
-                <div className="col-span-3 gap-4 grid grid-cols-3">
-                    {taskFolders.length != 0 ? (
-                        currFolder.taskLists.map((taskList, index) => (
-                            <div
-                                key={"TaskListKey" + index}
-                                className="p-4 shadow-md bg-gray-800"
-                            >
-                                <TaskList {...taskList} />
-                            </div>
-                        ))
-                    ) : (
-                        <p>Loading...</p>
-                    )}
-                </div>
+
+                <div className="col-span-3 gap-4 grid grid-cols-3">{taskFolders.length != 0 ? <TaskFolder {...currFolder} /> : <></>}</div>
             </div>
         </div>
     );

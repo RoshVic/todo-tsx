@@ -17,37 +17,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         setIsAuthenticated(!!token);
         setLoading(false);
     }, []);
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        setIsAuthenticated(!!token);
-    }, []);
-
     const logining = (token: string) => {
-        localStorage.setItem("token", token);
+        sessionStorage.setItem("token", token);
         setIsAuthenticated(true);
         navigate("/tasks");
     };
 
     const logout = () => {
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
         setIsAuthenticated(false);
         navigate("/");
     };
 
-    const value = useMemo(
-        () => ({ isAuthenticated, logining, logout }),
-        [isAuthenticated]
-    );
+    const value = useMemo(() => ({ isAuthenticated, logining, logout }), [isAuthenticated]);
 
     if (loading) return <div>Loading...</div>;
-    return (
-        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-    );
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

@@ -1,6 +1,6 @@
 import express from "express";
 import Users from "../models/userModel";
-import { authentication, random } from "../helpers";
+import Helpers from "../helpers/authHelper";
 
 const AuthControl = {
     login: async (req: express.Request, res: express.Response) => {
@@ -15,13 +15,13 @@ const AuthControl = {
                 return res.sendStatus(401);
             }
 
-            const expectedHash = authentication(user.authentication.salt, password);
+            const expectedHash = Helpers.authentication(user.authentication.salt, password);
             if (user.authentication.password !== expectedHash) {
                 return res.sendStatus(401);
             }
 
-            const salt = random();
-            user.authentication.sessionToken = authentication(salt, user._id.toString());
+            const salt = Helpers.random();
+            user.authentication.sessionToken = Helpers.authentication(salt, user._id.toString());
             await user.save();
 
             const safeUser = {
@@ -30,7 +30,7 @@ const AuthControl = {
                 token: user.authentication.sessionToken,
             };
 
-            console.log(user._id);
+            console.log(`Current User's Id: ${user._id}`);
             return res.status(200).json(safeUser);
         } catch (error) {
             console.log(error);
@@ -51,13 +51,13 @@ const AuthControl = {
                 return res.sendStatus(400);
             }
 
-            const salt = random();
+            const salt = Helpers.random();
             const user = await Users.createUser({
                 email,
                 username,
                 authentication: {
                     salt,
-                    password: authentication(salt, password),
+                    password: Helpers.authentication(salt, password),
                 },
             });
 
@@ -66,7 +66,7 @@ const AuthControl = {
                 username: user.username,
             };
 
-            console.log(user._id);
+            console.log(`New User's Id: ${user._id}`);
             return res.status(201).json(safeUser);
         } catch (error) {
             console.log(error);

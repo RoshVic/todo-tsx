@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { login } from "../api/auth";
+import { login } from "../api/authAPI";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import "../css/style.css";
@@ -10,7 +10,7 @@ export default function LoginPage() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const { logining } = useAuth();
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,14 +28,9 @@ export default function LoginPage() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <form
-                onSubmit={handleLogin}
-                className="bg-white shadow-md rounded-xl p-8 w-80"
-            >
+            <form onSubmit={handleLogin} className="bg-white shadow-md rounded-xl p-8 w-80">
                 <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-                {error && (
-                    <p className="text-red-500 mb-4 text-center">{error}</p>
-                )}
+                {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
 
                 <input
                     type="email"
@@ -54,11 +49,7 @@ export default function LoginPage() {
                     required
                 />
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600"
-                >
+                <button type="submit" disabled={loading} className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600">
                     {loading ? "Entering..." : "Enter"}
                 </button>
                 <button
