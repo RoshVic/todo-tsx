@@ -4,78 +4,100 @@ import { FaEdit, FaCheck } from "react-icons/fa";
 import { GiCancel } from "react-icons/gi";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 
-import type { TaskType } from "../interfaces/tasks";
-import TaskService from "../services/TaskService";
+import type { TaskFolderType, TaskListType, TaskType } from "../interfaces/tasks";
+import TaskAPI from "../api/taskAPI";
 
 interface PropTypes {
-    tasks: TaskType[];
-    setTasks: Dispatch<SetStateAction<TaskType[]>>;
+    taskFolders: TaskFolderType[];
+    setTaskFolders: Dispatch<SetStateAction<TaskFolderType[]>>;
+    currFolder: TaskFolderType;
+    setCurrFolder: Dispatch<SetStateAction<TaskFolderType>>;
+    taskList: TaskListType;
+    taskListIndex: number;
     task: TaskType;
-    index: number;
+    taskIndex: number;
 }
 
-export default function Task({ tasks, setTasks, task, index }: PropTypes) {
-    const [editedTaskId, setEditedTaskId] = useState<number>(-1);
-    const [editedTaskText, setEditedTaskText] = useState<string>("");
+export default function Task({
+    taskFolders,
+    setTaskFolders,
+    currFolder,
+    setCurrFolder,
+    taskList,
+    taskListIndex,
+    task,
+    taskIndex,
+}: PropTypes) {
+    const [isEditingDescription, setIsEditingDescription] = useState<boolean>(false);
+    const [editedDescription, setEditedDescription] = useState<string>("");
 
-    const handleEditStart = (id: number, Text: string) => {
-        setEditedTaskId(id);
-        setEditedTaskText(Text);
+    const handleEditDescriptionStart = (description: string) => {
+        setIsEditingDescription(true);
+        setEditedDescription(description);
     };
 
-    const handleEditCancel = () => {
-        setEditedTaskId(-1);
-        setEditedTaskText("");
+    const handleEditDescriptionCancel = () => {
+        setIsEditingDescription(false);
+        setEditedDescription("");
     };
 
-    const handleEditSave = (id: number) => {
-        if (editedTaskText.trim() !== "") {
-            const updatedTask = TaskService.updateTask(
-                tasks,
-                {
-                    title,
-                    description: editedTaskText,
-                },
-                editedTaskId
-            );
+    const handleEditDescriptionSave = async () => {
+        if (editedDescription.trim() !== "") {
+            const updatedTask = await TaskAPI.updateTask(currFolder._id, taskList._id, task._id, task.title, editedDescription);
 
-            const updatedTaskObj = Array.isArray(updatedTask) ? updatedTask.find((_task, index) => index === id) : updatedTask;
-            if (updatedTaskObj) {
-                setTasks((prevTasks) => prevTasks.map((task, index) => (index === id ? updatedTaskObj : task)));
-            }
-            setEditedTaskId(-1);
-            setEditedTaskText("");
+            const updateCurrFolder = currFolder;
+            updateCurrFolder.taskLists[taskListIndex].tasks[taskIndex].description = updatedTask.description;
+
+            setCurrFolder(updateCurrFolder);
+            setTaskFolders(taskFolders.map((folder) => (folder._id === currFolder._id ? updateCurrFolder : folder)));
+
+            setIsEditingDescription(false);
+            setEditedDescription("");
         }
     };
 
-    const handleDeleteTask = (id: number) => {
-        TaskService.deleteTask(tasks, id);
-        setTasks((prevTasks) => prevTasks.filter((_task, index) => index !== id));
+    const handleDeleteTaskButton = async () => {
+        await TaskAPI.deleteTask(currFolder._id, taskList._id, task._id);
+
+        const updateCurrFolder = currFolder;
+        updateCurrFolder.taskLists[taskListIndex].tasks = updateCurrFolder.taskLists[taskListIndex].tasks.filter((t) => t._id !== task._id);
+
+        setCurrFolder(updateCurrFolder);
+        setTaskFolders(taskFolders.map((folder) => (folder._id === currFolder._id ? updateCurrFolder : folder)));
     };
 
     return (
-        <div>
-            {editedTaskId === index ? (
+        <div className="flex justify-between">
+            {isEditingDescription ? (
                 <div className="flex space-x-2">
-                    <input type="text" value={editedTaskText} onChange={(e) => setEditedTaskText(e.target.value)} autoFocus={true} />
-                    <button onClick={() => handleEditSave(index)}>
+                    <input type="text" value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} autoFocus={true} />
+                    <button onClick={() => handleEditDescriptionSave()}>
                         <FaCheck />
                     </button>
-                    <button onClick={handleEditCancel}>
+                    <button onClick={() => handleEditDescriptionCancel()}>
                         <GiCancel />
                     </button>
                 </div>
             ) : (
                 <div className="flex space-x-2">
-                    <span>{task.description}</span>
-                    <button onClick={() => handleEditStart(index, task.description)}>
-                        <FaEdit />
-                    </button>{" "}
-                    <button onClick={() => handleDeleteTask(index)}>
-                        <RiDeleteBin5Fill />
-                    </button>
+                    <h4 className="font-semibold mb-2">{task.description}</h4>
+                    {taskList._id && (
+                        <button onClick={() => handleEditDescriptionStart(task.description)}>
+                            <FaEdit />
+                        </button>
+                    )}
                 </div>
             )}
+            <button
+                type="button"
+                key={task._id + "delete"}
+                onClick={() => {
+                    handleDeleteTaskButton();
+                }}
+                className="text-white text-left py-2 px-4 hover:bg-blue-700"
+            >
+                <RiDeleteBin5Fill />
+            </button>
         </div>
     );
 }

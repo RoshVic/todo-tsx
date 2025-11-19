@@ -28,37 +28,43 @@ export default function LoginPage() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <form onSubmit={handleLogin} className="bg-white shadow-md rounded-xl p-8 w-80">
-                <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-                {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+            <div className="bg-white shadow-md rounded-xl p-8 w-80">
+                <form onSubmit={handleLogin}>
+                    <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+                    {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
 
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="border rounded-lg p-2 w-full mb-3"
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="border rounded-lg p-2 w-full mb-5"
-                    required
-                />
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="border rounded-lg p-2 w-full mb-3"
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="border rounded-lg p-2 w-full mb-5"
+                        required
+                    />
 
-                <button type="submit" disabled={loading} className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600">
-                    {loading ? "Entering..." : "Enter"}
-                </button>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600"
+                    >
+                        {loading ? "Entering..." : "Enter"}
+                    </button>
+                </form>
                 <button
                     className="bg-green-500 text-white text-center py-2 px-4 rounded-lg w-full hover:bg-gray-600 mt-2"
                     onClick={() => navigate("/register")}
                 >
                     Register
                 </button>
-            </form>
+            </div>
         </div>
     );
 }
